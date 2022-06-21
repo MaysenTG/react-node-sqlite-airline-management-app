@@ -10,7 +10,7 @@ class ShowFlight extends React.Component {
     this.state = {
       responseFromBook: [],
       flightData: null,
-      idParam: window.location.pathname.split("/")[2],
+      idFlightParam: window.location.pathname.split("/")[2],
       flightMapImgUrl: "",
       locationToICAO: {
         Sydney: "YSSY",
@@ -19,51 +19,91 @@ class ShowFlight extends React.Component {
         Claris: "NZGB",
         "Lake Tekapo": "NZTL",
       },
-      loading: false,
+      booked: false,
       userLoginInfo: {},
     };
   }
 
   async componentDidMount() {
-    const idParam = this.state.idParam;
+    const userLoginInfo = JSON.parse(
+      window.sessionStorage.getItem("userLoginInfo")
+    );
 
-    const response = await fetch(`/api/get_flight/${idParam}`, {
+    const idFlightParam = this.state.idFlightParam;
+    const customerID = userLoginInfo.id;
+
+    const response = await fetch(`/api/get_flight/${idFlightParam}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        customerID: customerID,
+      }),
     });
 
     const body = await response.json();
 
-    this.setState({
-      flightData: body,
-      userLoginInfo: JSON.parse(window.sessionStorage.getItem("userLoginInfo")),
-    });
-
+    this.setState({ flightData: body, userLoginInfo: userLoginInfo });
+    
     console.log(body);
   }
 
   handleBookFlight = async (e) => {
     // Scroll to the form for the user to fill out
     e.preventDefault();
+    const userLoginInfo = JSON.parse(
+      window.sessionStorage.getItem("userLoginInfo")
+    );
 
+    const customerID = userLoginInfo.id;
+
+    const unique_booking_id = (Math.floor(Math.random() * 10000000000) * customerID) + customerID;
+    
     const response = await fetch("/api/book_flight", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        flightID: this.state.idParam,
+        flightID: this.state.idFlightParam,
+        bookingID: unique_booking_id,
         userData: {
           email: e.target.email.value,
-          customer_id: e.target.customer_id.value,
+          customerID: customerID,
           flight_id: this.state.flightData.id,
         },
       }),
     });
 
+    window.location.reload();
+
     const body = await response.json();
+  };
+
+  cancelFlightBooking = async (e) => {
+    e.preventDefault();
+    const flightID = this.state.idFlightParam;
+    const bookingID = this.state.flightData[0].booking_id;
+
+    const userLoginInfo = JSON.parse(
+      window.sessionStorage.getItem("userLoginInfo")
+    );
+    const customerID = userLoginInfo.id;
+
+    const response = await fetch(`/api/cancel_booking/${flightID}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        customerID: customerID,
+        bookingID: bookingID,
+      }),
+    });
+
+    //const body = await response.json();
+    window.location.reload();
   };
 
   render() {
@@ -72,7 +112,6 @@ class ShowFlight extends React.Component {
     if (data) {
       const ICAOTranslation = this.state.locationToICAO;
       const destinationIcao = ICAOTranslation[data[0].destination];
-
       this.setState({
         flightMapImgUrl: `http://www.gcmap.com/map?P=NZNE-${destinationIcao}&MS=wls&MR=200&PM=*`,
       });
@@ -93,15 +132,27 @@ class ShowFlight extends React.Component {
                     className="d-flex h-100"
                   >
                     {data[0].customer_id ? (
-                      <button
-                        style={{ maxHeight: "40px" }}
-                        className="btn btn-primary w-100"
-                        data-bs-toggle="modal"
-                        data-bs-target="#formBookFlightModal"
-                        disabled
-                      >
-                        Already booked!
-                      </button>
+                      <div className="d-flex flex-column w-100">
+                        <button
+                          style={{ maxHeight: "40px" }}
+                          className="btn btn-primary w-100"
+                          data-bs-toggle="modal"
+                          data-bs-target="#formBookFlightModal"
+                          disabled
+                        >
+                          Already booked!
+                        </button>
+                        <br />
+                        <form onSubmit={this.cancelFlightBooking}>
+                          <button
+                            style={{ maxHeight: "40px" }}
+                            className="btn btn-danger w-100"
+                            type="submit"
+                          >
+                            Cancel booking
+                          </button>
+                        </form>
+                      </div>
                     ) : (
                       <button
                         style={{ maxHeight: "40px" }}
@@ -166,7 +217,7 @@ class ShowFlight extends React.Component {
                         First name
                       </label>
                       <input
-                        value={this.state.userLoginInfo.first_name}
+                        defaultValue={this.state.userLoginInfo.first_name}
                         name="first_name"
                         type="text"
                         className="form-control"
@@ -185,7 +236,7 @@ class ShowFlight extends React.Component {
                         name="last_name"
                         type="text"
                         className="form-control"
-                        value={this.state.userLoginInfo.first_name}
+                        defaultValue={this.state.userLoginInfo.first_name}
                         id="validationCustom02"
                         required
                       />
@@ -203,7 +254,7 @@ class ShowFlight extends React.Component {
                           name="customer_id"
                           type="text"
                           className="form-control"
-                          value={this.state.userLoginInfo.id}
+                          defaultValue={this.state.userLoginInfo.id}
                           id="validationCustomUsername"
                           aria-describedby="inputGroupPrepend"
                           required
@@ -221,7 +272,7 @@ class ShowFlight extends React.Component {
                         name="email"
                         type="text"
                         className="form-control"
-                        value={this.state.userLoginInfo.email}
+                        defaultValue={this.state.userLoginInfo.email}
                         id="validationCustom05"
                         required
                       />
@@ -231,7 +282,7 @@ class ShowFlight extends React.Component {
                         <input
                           className="form-check-input"
                           type="checkbox"
-                          value=""
+                          defaultValue=""
                           id="invalidCheck"
                           required
                         />

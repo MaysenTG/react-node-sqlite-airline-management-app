@@ -39,15 +39,23 @@ const db = new sqlite3.Database("./main.db", sqlite3.OPEN_READWRITE, (err) => {
 //   'UPDATE users SET id=2 WHERE first_name="John"'
 // )
 
+// db.run(
+//   'ALTER TABLE user_flights ADD booking_id INTEGER'
+// )
+
+// db.run(
+//   'DELETE FROM user_flights'
+// )
+
 // const sql = (
 //   'INSERT INTO user_flights(flight_id, customer_id) VALUES (?, ?)'
 // )
 
 // const sql = (
-//   'DELETE FROM user_flights'
+//   'DELETE FROM user_flights(flight_id, customer_id) VALUES (?, ?)'
 // )
 
-// db.run(sql, (err) => {
+// db.run(sql, [2, 1], (err) => {
 //   if (err) return console.error(err.message);
 
 //   console.log("Inserted a row into the departures table.");
