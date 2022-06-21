@@ -28,10 +28,7 @@ console.log(__dirname);
 
 app.use(express.static(path.join(__dirname, "/client/build")));
 
-app.get("/api/hello", (req, res) => {
-  res.send({ express: "Hello From Express" });
-});
-
+// Gets the flights whose plane name match the search query
 app.post("/api/get_flights", async (req, res) => {
   const searchQuery = req.body.planeTitleInput;
   const db = await dbPromise;
@@ -42,6 +39,7 @@ app.post("/api/get_flights", async (req, res) => {
   res.send(departures_by_plane_name);
 });
 
+// Posts the login data from the form. No data is returned if the data doesn't match
 app.post("/api/account/login", async (req, res) => {
   const loginFormEmail = req.body.userLoginInfo.email;
   const loginFormPassword = req.body.userLoginInfo.password;
@@ -54,6 +52,7 @@ app.post("/api/account/login", async (req, res) => {
   res.send(user_login_query);
 });
 
+// Code for booking a flight
 app.post("/api/book_flight", async (req, res) => {
   const flightID = req.body.flightID;
   const customerID = req.body.userData.customer_id;
@@ -75,6 +74,7 @@ app.post("/api/book_flight", async (req, res) => {
   res.send(responseText);
 });
 
+// Code for cancelling a flight
 app.post("/api/cancel_booking/:flight_id", async (req, res) => {
   const flightID = req.params.flight_id;
   const customerID = req.body.customerID;
@@ -84,13 +84,12 @@ app.post("/api/cancel_booking/:flight_id", async (req, res) => {
   await db.all(
     `DELETE FROM user_flights WHERE flight_id='${flightID}' AND customer_id='${customerID}'`
   );
-  
-  console.log("DELETED")
 
   const responseText = { express: `Booked flight number: ${flightID}` };
   res.send(responseText);
 });
 
+// Gets the data for this page. Called in componentDidMount. Gets user data, and flights associated with the user via the user_flights junction table
 app.post("/api/get_user_flight_data/:customer_id", async (req, res) => {
   // Param ID from HTTP request
   let customer_id = req.params.customer_id;
@@ -99,12 +98,11 @@ app.post("/api/get_user_flight_data/:customer_id", async (req, res) => {
   const departures_by_plane_name = await db.all(
     `SELECT * FROM user_flights JOIN users ON (users.id = ${customer_id}) JOIN departures ON (user_flights.flight_id = departures.flight_id)`
   );
-  
-  console.log(departures_by_plane_name)
 
   res.send(departures_by_plane_name);
 });
 
+// Gets just the user data, used on the account edit page
 app.post("/api/get_user_data/:customer_id", async (req, res) => {
   // Param ID from HTTP request
   let customer_id = req.params.customer_id;
@@ -116,6 +114,7 @@ app.post("/api/get_user_data/:customer_id", async (req, res) => {
   res.send(only_user_data);
 });
 
+// Allows the user to edit their account information
 app.post("/api/edit_user_data/:customer_id", async (req, res) => {
   // Param ID from HTTP request
   let customer_id = req.params.customer_id;
@@ -132,40 +131,37 @@ app.post("/api/edit_user_data/:customer_id", async (req, res) => {
   res.send({ express: "Finished setting data" });
 });
 
+// Gets all the flights in the DB
 app.get("/api/get_flights/all", async (req, res) => {
   const db = await dbPromise;
   const all_departure_data = await db.all(`SELECT * FROM departures`);
   res.send(all_departure_data);
 });
 
-// Gets the individual flight information
+// Gets the flight information for a single flight
+// We need to check if the user has already booked this flight, and if so, block the book form from submitting
 app.post("/api/get_flight/:id", async (req, res) => {
   // Param ID from HTTP request
   let idParam = req.params.id;
-
   const db = await dbPromise;
-  
-  //`SELECT * FROM departures WHERE departures.flight_id=${idParam}`
-  
   const flight_info_by_id = await db.all(
-    `SELECT departures.flight_id, departures.departure_time, departures.departure_date, departures.destination, departures.plane_name, users.id, users.first_name, users.last_name, users.user_name, users.email FROM departures JOIN user_flights ON (user_flights.flight_id = departures.flight_id) JOIN users ON (users.id = user_flights.customer_id) WHERE departures.flight_id=${idParam}`
+    `SELECT * FROM user_flights JOIN users ON (users.id = 1) JOIN departures ON (user_flights.flight_id = ${idParam})`
+    //`SELECT departures.flight_id, departures.departure_time, departures.departure_date, departures.destination, departures.plane_name, users.id, users.first_name, users.last_name, users.user_name, users.email FROM departures JOIN user_flights ON (user_flights.flight_id = departures.flight_id) JOIN users ON (users.id = user_flights.customer_id) WHERE departures.flight_id=${idParam}`
   );
-  
-  if(flight_info_by_id.length == 0) {
-    console.log("Customer hasn't booked flight");
-  } else {
-    res.send(flight_info_by_id);
-  }
-  
+
   const flight_info_by_id_simple = await db.all(
     `SELECT * FROM departures WHERE departures.flight_id=${idParam}`
   );
-  
-  console.log(flight_info_by_id_simple)
 
-  res.send(flight_info_by_id_simple);
+  if (flight_info_by_id.length == 0) {
+    console.log("Customer hasn't booked flight");
+    res.send(flight_info_by_id_simple);
+  } else {
+    res.send(flight_info_by_id);
+  }
 });
 
+// Setup the db and start the server
 const setup = async () => {
   const db = await dbPromise;
   app.listen(port, () => console.log(`Listening on port ${port}`));

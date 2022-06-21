@@ -40,6 +40,8 @@ class ShowFlight extends React.Component {
       flightData: body,
       userLoginInfo: JSON.parse(window.sessionStorage.getItem("userLoginInfo")),
     });
+
+    console.log(body);
   }
 
   handleBookFlight = async (e) => {
@@ -90,14 +92,26 @@ class ShowFlight extends React.Component {
                     style={{ alignItems: "flex-end" }}
                     className="d-flex h-100"
                   >
-                    <button
-                      style={{ maxHeight: "40px" }}
-                      className="btn btn-primary w-100"
-                      data-bs-toggle="modal"
-                      data-bs-target="#formBookFlightModal"
-                    >
-                      Book flight now
-                    </button>
+                    {data[0].customer_id ? (
+                      <button
+                        style={{ maxHeight: "40px" }}
+                        className="btn btn-primary w-100"
+                        data-bs-toggle="modal"
+                        data-bs-target="#formBookFlightModal"
+                        disabled
+                      >
+                        Already booked!
+                      </button>
+                    ) : (
+                      <button
+                        style={{ maxHeight: "40px" }}
+                        className="btn btn-primary w-100"
+                        data-bs-toggle="modal"
+                        data-bs-target="#formBookFlightModal"
+                      >
+                        <>Book flight now</>
+                      </button>
+                    )}
                   </div>
                   {this.state.responseFromBook ? (
                     <div>{this.state.responseFromBook.express}</div>
