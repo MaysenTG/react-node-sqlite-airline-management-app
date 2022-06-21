@@ -4,7 +4,9 @@ import React, { Component } from "react";
 export default class Login extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      authenticated: null,
+    };
   }
 
   componentDidMount() {
@@ -14,28 +16,50 @@ export default class Login extends Component {
     console.log(userLoginInfo);
   }
 
-  handleSubmit = (e) => {
+  handleSubmit = async (e) => {
     e.preventDefault();
-    //console.log(e.target.loginAirpointsID.value);
+    
+    const response = await fetch("/api/account/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userLoginInfo: {
+          email: e.target.loginEmail.value,
+          password: e.target.loginPassword.value,
+        },
+      }),
+    });
 
-    const userLoginInfo = {
-      email: e.target.loginEmail.value,
-      airpoints_id: e.target.loginAirpointsID.value,
-      password: e.target.loginPassword.value,
-    };
+    const body = await response.json();
 
-    window.sessionStorage.setItem(
-      "userLoginInfo",
-      JSON.stringify(userLoginInfo)
-    );
-
-    window.location.reload();
+    if (body.length > 0) {
+      window.sessionStorage.setItem(
+        "userLoginInfo",
+        JSON.stringify(body[0])
+      );
+      this.setState({
+        authenticated: true,
+      });
+      window.location.reload();
+    } else {
+      this.setState({
+        authenticated: false,
+      });
+    }
+    //console.log(body);
   };
 
   render() {
     return (
       <div className="container w-75 mt-2">
         <h2>Login</h2>
+        {this.state.authenticated === false && (
+          <div style={{ color: "red" }}>
+            Login credentials incorrect, please try again
+          </div>
+        )}
         <form onSubmit={this.handleSubmit} className="form">
           <div className="form-outline mb-4">
             <label className="form-label" htmlFor="form2Example1">
@@ -46,18 +70,7 @@ export default class Login extends Component {
               id="loginEmail"
               name="login_email"
               className="form-control"
-            />
-          </div>
-
-          <div className="form-outline mb-4">
-            <label className="form-label" htmlFor="form2Example2">
-              Airpoints ID
-            </label>
-            <input
-              type="number"
-              id="loginAirpointsID"
-              name="login_airpoints_id"
-              className="form-control"
+              required
             />
           </div>
 
@@ -70,12 +83,14 @@ export default class Login extends Component {
               id="loginPassword"
               name="login_password"
               className="form-control"
+              required
             />
           </div>
 
           <button type="submit" className="btn btn-primary btn-block mb-4">
             Sign in
-          </button>
+          </button> &nbsp;
+          <a href="/account/create">Don't have an account? Create one here</a>
         </form>
       </div>
     );

@@ -54,17 +54,14 @@ class ShowFlight extends React.Component {
       body: JSON.stringify({
         flightID: this.state.idParam,
         userData: {
-          first_name: e.target.first_name.value,
-          last_name: e.target.last_name.value,
           email: e.target.email.value,
-          user_id: e.target.customer_id.value,
+          customer_id: e.target.customer_id.value,
+          flight_id: this.state.flightData.id,
         },
       }),
     });
 
     const body = await response.json();
-    console.log("-----");
-    console.log(body);
   };
 
   render() {
@@ -174,6 +171,7 @@ class ShowFlight extends React.Component {
                         name="last_name"
                         type="text"
                         className="form-control"
+                        value={this.state.userLoginInfo.first_name}
                         id="validationCustom02"
                         required
                       />
@@ -191,7 +189,7 @@ class ShowFlight extends React.Component {
                           name="customer_id"
                           type="text"
                           className="form-control"
-                          value={this.state.userLoginInfo.airpoints_id}
+                          value={this.state.userLoginInfo.id}
                           id="validationCustomUsername"
                           aria-describedby="inputGroupPrepend"
                           required

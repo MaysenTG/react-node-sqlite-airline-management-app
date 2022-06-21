@@ -43,7 +43,11 @@ const db = new sqlite3.Database("./main.db", sqlite3.OPEN_READWRITE, (err) => {
 //   'INSERT INTO user_flights(flight_id, customer_id) VALUES (?, ?)'
 // )
 
-// db.run(sql, [2, 1], (err) => {
+// const sql = (
+//   'DELETE FROM user_flights'
+// )
+
+// db.run(sql, (err) => {
 //   if (err) return console.error(err.message);
 
 //   console.log("Inserted a row into the departures table.");
