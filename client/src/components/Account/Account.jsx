@@ -22,6 +22,7 @@ class Account extends React.Component {
   // Fetches the data for this page. Called in componentDidMount. Gets user data, and flights associated with the user via the user_flights junction table
   async componentDidMount() {
     const idParam = this.state.idParam;
+    console.log(idParam + " here for get user flight data");
 
     const response = await fetch(`/api/get_user_flight_data/${idParam}`, {
       method: "POST",
@@ -182,7 +183,7 @@ class Account extends React.Component {
                                 className="mb-2 pb-1"
                                 style={{ color: "#2b2a2a" }}
                               >
-                                ID: {flight.flight_id}
+                                Booking reference: <strong><a href={"/flights/"+flight.flight_id}>{flight.booking_id}</a></strong>
                               </p>
                               <p
                                 className="mb-2 pb-1"

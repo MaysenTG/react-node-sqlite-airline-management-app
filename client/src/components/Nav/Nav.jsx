@@ -18,7 +18,7 @@ class NavBar extends React.Component {
 
   componentDidMount() {
     const userLoginInfo = JSON.parse(
-      window.sessionStorage.getItem("userLoginInfo")
+      window.localStorage.getItem("userLoginInfo")
     );
 
     if (userLoginInfo) {
@@ -28,7 +28,7 @@ class NavBar extends React.Component {
 
   handleLogout() {
     console.log("logging out...");
-    window.sessionStorage.removeItem("userLoginInfo");
+    window.localStorage.removeItem("userLoginInfo");
     //window.location.reload();
   }
 
@@ -38,7 +38,7 @@ class NavBar extends React.Component {
       return (
         <nav className="navbar navbar-expand-lg bg-light">
           <div className="container-fluid">
-            <a className="navbar-brand" href="#">
+            <a className="navbar-brand" href="/">
               Airline Management
             </a>
             <button
@@ -58,7 +58,7 @@ class NavBar extends React.Component {
             >
               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li className="nav-item">
-                  <a className="nav-link active" aria-current="page" href="#">
+                  <a className="nav-link active" aria-current="page" href="/">
                     Home
                   </a>
                 </li>
@@ -66,13 +66,6 @@ class NavBar extends React.Component {
                   <li className="nav-item">
                     <StyledLink className="nav-link" to="/search-flight">
                       Search flight
-                    </StyledLink>
-                  </li>
-                </li>
-                <li className="nav-item">
-                  <li className="nav-item">
-                    <StyledLink className="nav-link" to="/book-flight">
-                      Book a flight
                     </StyledLink>
                   </li>
                 </li>
@@ -94,17 +87,17 @@ class NavBar extends React.Component {
                     <li>
                       <a
                         className="dropdown-item"
-                        href={"/my-account/" + userLoginInfo.id + "/edit"}
+                        href={"/my-account/" + userLoginInfo.customer_id + "/edit"}
                       >
-                        View account
+                        Edit account
                       </a>
                     </li>
                     <li>
                       <a
                         className="dropdown-item"
-                        href={"/my-account/" + userLoginInfo.id}
+                        href={"/my-account/" + userLoginInfo.customer_id}
                       >
-                        View flights
+                        View bookings
                       </a>
                     </li>
                     <li>

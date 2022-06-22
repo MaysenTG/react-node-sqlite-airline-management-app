@@ -11,7 +11,7 @@ export default class Login extends Component {
 
   componentDidMount() {
     const userLoginInfo = JSON.parse(
-      window.sessionStorage.getItem("userLoginInfo")
+      window.localStorage.getItem("userLoginInfo")
     );
     console.log(userLoginInfo);
   }
@@ -35,7 +35,7 @@ export default class Login extends Component {
     const body = await response.json();
 
     if (body.length > 0) {
-      window.sessionStorage.setItem(
+      window.localStorage.setItem(
         "userLoginInfo",
         JSON.stringify(body[0])
       );

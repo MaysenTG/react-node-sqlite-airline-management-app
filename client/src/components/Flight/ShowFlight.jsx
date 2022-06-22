@@ -26,11 +26,22 @@ class ShowFlight extends React.Component {
 
   async componentDidMount() {
     const userLoginInfo = JSON.parse(
-      window.sessionStorage.getItem("userLoginInfo")
+      window.localStorage.getItem("userLoginInfo")
     );
 
     const idFlightParam = this.state.idFlightParam;
-    const customerID = userLoginInfo.id;
+    const customerID = userLoginInfo.customer_id;
+
+    const response_user_data = await fetch(`/api/get_user_data/${customerID}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const body_user_data = await response_user_data.json();
+
+    this.setState({ userLoginInfo: body_user_data });
 
     const response = await fetch(`/api/get_flight/${idFlightParam}`, {
       method: "POST",
@@ -45,7 +56,7 @@ class ShowFlight extends React.Component {
     const body = await response.json();
 
     this.setState({ flightData: body, userLoginInfo: userLoginInfo });
-    
+
     console.log(body);
   }
 
@@ -53,13 +64,14 @@ class ShowFlight extends React.Component {
     // Scroll to the form for the user to fill out
     e.preventDefault();
     const userLoginInfo = JSON.parse(
-      window.sessionStorage.getItem("userLoginInfo")
+      window.localStorage.getItem("userLoginInfo")
     );
 
-    const customerID = userLoginInfo.id;
+    const customerID = userLoginInfo.customer_id;
 
-    const unique_booking_id = (Math.floor(Math.random() * 10000000000) * customerID) + customerID;
-    
+    const unique_booking_id =
+      Math.floor(Math.random() * 10000000000) * customerID + customerID;
+
     const response = await fetch("/api/book_flight", {
       method: "POST",
       headers: {
@@ -87,9 +99,9 @@ class ShowFlight extends React.Component {
     const bookingID = this.state.flightData[0].booking_id;
 
     const userLoginInfo = JSON.parse(
-      window.sessionStorage.getItem("userLoginInfo")
+      window.localStorage.getItem("userLoginInfo")
     );
-    const customerID = userLoginInfo.id;
+    const customerID = userLoginInfo.customer_id;
 
     const response = await fetch(`/api/cancel_booking/${flightID}`, {
       method: "POST",
@@ -140,14 +152,19 @@ class ShowFlight extends React.Component {
                           data-bs-target="#formBookFlightModal"
                           disabled
                         >
-                          Already booked!
+                          You're all booked, have fun!
                         </button>
                         <br />
+                        <button className="btn btn-secondary">
+                          View invoice
+                        </button>
+                        <span className="text-center">or</span>
                         <form onSubmit={this.cancelFlightBooking}>
                           <button
                             style={{ maxHeight: "40px" }}
                             className="btn btn-danger w-100"
                             type="submit"
+                            data-toggle="confirmation"
                           >
                             Cancel booking
                           </button>
@@ -254,7 +271,7 @@ class ShowFlight extends React.Component {
                           name="customer_id"
                           type="text"
                           className="form-control"
-                          defaultValue={this.state.userLoginInfo.id}
+                          defaultValue={this.state.userLoginInfo.customer_id}
                           id="validationCustomUsername"
                           aria-describedby="inputGroupPrepend"
                           required

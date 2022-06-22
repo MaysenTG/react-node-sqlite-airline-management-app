@@ -35,6 +35,15 @@ class EditAccount extends React.Component {
     e.preventDefault();
     const idParam = this.state.idParam;
 
+    const newUserData = {
+      email: e.target.inputEmail.value,
+      password: e.target.inputPassword.value,
+      first_name: e.target.inputFName.value,
+      last_name: e.target.inputLName.value,
+      customer_id: idParam,
+      user_name: this.state.userData.user_name,
+    };
+
     const response = await fetch(`/api/edit_user_data/${idParam}`, {
       method: "POST",
       headers: {
@@ -52,7 +61,10 @@ class EditAccount extends React.Component {
 
     const body = await response.json();
 
-    this.setState({ showSaveBtn: false });
+    // When the response comes back, update the local storage value with the new data,
+    // And update the userData state with the new data.
+    window.localStorage.setItem("userLoginInfo", JSON.stringify(newUserData));
+    this.setState({ showSaveBtn: false, userData: newUserData });
   };
 
   render() {
@@ -86,9 +98,9 @@ class EditAccount extends React.Component {
               Editing account for ID: <strong>{userData.id}</strong>
             </h2>
             <form id="edit-account-form" onSubmit={this.onSubmitEdit}>
-              <div className="mb-3 row">
+              <div className="mb-3 row row-cols-1 row-cols-sm-2 row-cols-lg-2">
                 <div className="col">
-                  <label for="inputFName" className="col-sm-2 col-form-label">
+                  <label for="inputFName" className="col-form-label">
                     First Name
                   </label>
                   <div className="col">
@@ -102,7 +114,7 @@ class EditAccount extends React.Component {
                   </div>
                 </div>
                 <div className="col">
-                  <label for="inputLName" className="col-sm-2 col-form-label">
+                  <label for="inputLName" className="col-form-label">
                     Last name
                   </label>
                   <div className="col">
@@ -116,9 +128,9 @@ class EditAccount extends React.Component {
                   </div>
                 </div>
               </div>
-              <div className="mb-3 row">
+              <div className="mb-3 row row-cols-1 row-cols-sm-2 row-cols-lg-2">
                 <div className="col">
-                  <label for="inputEmail" className="col-sm-2 col-form-label">
+                  <label for="inputEmail" className="col-form-label">
                     Email
                   </label>
                   <div className="col">
@@ -132,10 +144,7 @@ class EditAccount extends React.Component {
                   </div>
                 </div>
                 <div className="col">
-                  <label
-                    for="inputPassword"
-                    className="col-sm-2 col-form-label"
-                  >
+                  <label for="inputPassword" className="col-form-label">
                     Password
                   </label>
                   <div className="col">

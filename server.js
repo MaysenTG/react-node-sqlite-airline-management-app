@@ -102,13 +102,13 @@ app.post("/api/cancel_booking/:flight_id", async (req, res) => {
 // Gets the data for this page. Called in componentDidMount. Gets user data, and flights associated with the user via the user_flights junction table
 app.post("/api/get_user_flight_data/:customer_id", async (req, res) => {
   // Param ID from HTTP request
-  let customer_id = req.params.customer_id;
-
+  const customer_id = req.params.customer_id;
+  console.log(customer_id);
   const db = await dbPromise;
 
   const departures_by_plane_name = await db.all(
     //`SELECT * FROM user_flights JOIN users ON (users.id = ${customer_id}) JOIN departures ON (user_flights.flight_id = departures.flight_id)`
-    `SELECT * FROM user_flights JOIN departures ON (user_flights.flight_id = departures.flight_id) WHERE user_flights.customer_id=${customer_id}`
+    `SELECT * FROM user_flights JOIN departures ON (user_flights.flight_id = departures.flight_id) WHERE user_flights.customer_id='${customer_id}'`
   );
   // const just_user_data = await db.all(
   //   `SELECT * FROM users WHERE id=${customer_id}`
