@@ -13,11 +13,11 @@ export default class Login extends Component {
     };
   }
 
+  // Grab login info in case it's present
   componentDidMount() {
     const userLoginInfo = JSON.parse(
       window.localStorage.getItem("userLoginInfo")
     );
-    console.log(userLoginInfo);
   }
 
   handleSubmit = async (e) => {
@@ -25,9 +25,6 @@ export default class Login extends Component {
 
     const email = e.target.loginEmail.value;
     const password = e.target.loginPassword.value;
-
-    console.log(email);
-    console.log(password);
 
     const response = await fetch("/api/account/login", {
       method: "POST",
@@ -59,8 +56,6 @@ export default class Login extends Component {
 
   handleCreateAccount = async (e) => {
     e.preventDefault();
-
-    console.log(e.target);
 
     const email = e.target.inputEmail.value;
     const password = e.target.inputPassword.value;
@@ -100,7 +95,7 @@ export default class Login extends Component {
     );
 
     e.target.reset();
-    
+
     this.setState({ showLogin: true });
   };
 

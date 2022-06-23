@@ -110,7 +110,7 @@ class Account extends React.Component {
                             {justUserData[0].last_name}
                           </h5>
                           <p className="mb-2 pb-1" style={{ color: "#2b2a2a" }}>
-                            Customer ID: <strong>{justUserData[0].id}</strong>
+                            Customer ID: <strong>{justUserData[0].customer_id}</strong>
                           </p>
                           <div
                             className="d-flex justify-content-start rounded-3 p-2 mb-2"
@@ -126,20 +126,6 @@ class Account extends React.Component {
                                   : 0}
                               </p>
                             </div>
-                          </div>
-                          <div className="d-flex pt-1">
-                            <button
-                              type="button"
-                              className="btn btn-outline-primary me-1 flex-grow-1"
-                            >
-                              Chat
-                            </button>
-                            <button
-                              type="button"
-                              className="btn btn-primary flex-grow-1"
-                            >
-                              Follow
-                            </button>
                           </div>
                         </div>
                       </div>
