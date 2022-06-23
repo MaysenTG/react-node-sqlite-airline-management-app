@@ -18,7 +18,7 @@ class ShowFlight extends React.Component {
         Tuuta: "NZCI",
         Claris: "NZGB",
         "Lake Tekapo": "NZTL",
-        "Dairy Flats": "NZNE",
+        "Dairy Flat": "NZNE",
       },
       booked: false,
       userLoginInfo: {},
@@ -122,9 +122,11 @@ class ShowFlight extends React.Component {
 
     if (data) {
       const ICAOTranslation = this.state.locationToICAO;
-      const destinationIcao = ICAOTranslation[data[0].destination];
+      const destination = data[0].destination;
+      const destinationIcao = ICAOTranslation[destination];
+      const originIcao = ICAOTranslation[data[0].origin];
       this.setState({
-        flightMapImgUrl: `http://www.gcmap.com/map?P=NZNE-${destinationIcao}&MS=wls&MR=200&PM=*`,
+        flightMapImgUrl: `http://www.gcmap.com/map?P=${originIcao}-${destinationIcao}&MS=wls&MR=200&PM=*`,
       });
       return (
         <div className="container">
@@ -134,10 +136,35 @@ class ShowFlight extends React.Component {
               <div className="col-md-6">
                 <div className="d-flex flex-column card-body h-100">
                   <h5 className="card-title">
-                    Flight from <strong>Dairy Flat</strong> to{" "}
+                    Flight from <strong>{data[0].origin}</strong> to{" "}
                     <strong>{data[0].destination}</strong>
                   </h5>
-                  <p className="card-text">Lorem Ipsum</p>
+                  <p className="card-text">Beautiful trip with scenic views</p>
+                  <hr></hr>
+                  <p className="card-text">
+                    <strong>Flight ID:</strong> {data[0].flight_id}
+                  </p>
+                  <p className="card-text">
+                    <strong>Plane Name:</strong> {data[0].plane_name}
+                  </p>
+
+                  <hr></hr>
+                  <p className="card-text">
+                    <strong>Departure Date:</strong> {data[0].departure_date}
+                  </p>
+                  <p className="card-text">
+                    <strong>Departure Time:</strong> {data[0].departure_time}
+                  </p>
+
+                  <hr></hr>
+
+                  <p className="card-text">
+                    <strong>Cost per ticket:</strong> ${data[0].cost}
+                  </p>
+                  <p className="card-text">
+                    <strong>Number of seats:</strong> {data[0].seats}
+                  </p>
+
                   <div
                     style={{ alignItems: "flex-end" }}
                     className="d-flex h-100"
@@ -270,7 +297,7 @@ class ShowFlight extends React.Component {
                         name="last_name"
                         type="text"
                         className="form-control"
-                        defaultValue={this.state.userLoginInfo.first_name}
+                        defaultValue={this.state.userLoginInfo.last_name}
                         id="validationCustom02"
                         required
                       />
@@ -362,7 +389,7 @@ class ShowFlight extends React.Component {
               <div className="modal-content">
                 <div className="modal-header">
                   <h5 className="modal-title" id="staticBackdropLabel">
-                    Modal title
+                    Customer invoice
                   </h5>
                   <button
                     type="button"
@@ -371,7 +398,9 @@ class ShowFlight extends React.Component {
                     aria-label="Close"
                   ></button>
                 </div>
-                <div className="modal-body">...</div>
+                <div className="modal-body">
+                  Total cost of flight: ${data[0].cost} (GST included)
+                </div>
                 <div className="modal-footer">
                   <button
                     type="button"
@@ -379,9 +408,6 @@ class ShowFlight extends React.Component {
                     data-bs-dismiss="modal"
                   >
                     Close
-                  </button>
-                  <button type="button" className="btn btn-primary">
-                    Understood
                   </button>
                 </div>
               </div>

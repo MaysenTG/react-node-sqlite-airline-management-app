@@ -32,20 +32,23 @@ app.use(express.static(path.join(__dirname, "/client/build")));
 app.post("/api/get_flights", async (req, res) => {
   const searchDestination = req.body.inputDestination;
   const searchDate = req.body.inputDate;
+  
+  console.log(searchDestination);
+  console.log(searchDate);
 
   const db = await dbPromise;
 
-  if (searchDate != "" && searchDestination != "default") {
+  if (searchDate != "-undefined-undefined" && searchDestination != "default") {
     const departures_by_search = await db.all(
       `SELECT * FROM departures WHERE DATE(departure_date)='${searchDate}' AND destination='${searchDestination}'`
     );
     res.send(departures_by_search);
-  } else if (searchDate != "" && searchDestination == "default") {
+  } else if (searchDate != "-undefined-undefined" && searchDestination == "default") {
     const departures_by_search = await db.all(
       `SELECT * FROM departures WHERE DATE(departure_date)='${searchDate}'`
     );
     res.send(departures_by_search);
-  } else if (searchDate == "" && searchDestination != "default") {
+  } else if (searchDate == "-undefined-undefined" && searchDestination != "default") {
     const departures_by_search = await db.all(
       `SELECT * FROM departures WHERE destination='${searchDestination}'`
     );
@@ -235,7 +238,7 @@ app.post("/api/get_flight/:id", async (req, res) => {
 });
 
 // Admin API stuff
-app.post("/api/admin/edit_flight/:flight_id", async (req, res) => {
+app.post("/api/admin/edit_flight/:flight_id", async (req, res) => { // NEEDS WORK
   // Param ID from HTTP request
   const idFlightParam = req.params.flight_id;
   const newFlightPlaneName = req.body.newFlightPlaneName;
@@ -244,11 +247,12 @@ app.post("/api/admin/edit_flight/:flight_id", async (req, res) => {
   const newFlightDestination = req.body.newFlightDestination;
   const newFlightPrice = req.body.newFlightPrice;
   const newFlightNumberSeats = req.body.newFlightNumberSeats;
+  const newFlightOrigin = req.body.newFlightOrigin;; // TODO 
 
   const db = await dbPromise;
 
   db.run(
-    `UPDATE departures SET plane_name='${newFlightPlaneName}', departure_date='${newFlightDepartureDate}', destination='${newFlightDestination}', departure_time='${newFlightTime}', cost='${newFlightPrice}', seats='${newFlightNumberSeats}'  WHERE flight_id=${idFlightParam}`,
+    `UPDATE departures SET plane_name='${newFlightPlaneName}', departure_date='${newFlightDepartureDate}', destination='${newFlightDestination}', origin='${newFlightOrigin}', departure_time='${newFlightTime}', cost='${newFlightPrice}', seats='${newFlightNumberSeats}'  WHERE flight_id=${idFlightParam}`,
     (err) => {
       if (err) return console.error(err.message);
 
@@ -283,6 +287,7 @@ app.post("/api/admin/add_flight", async (req, res) => {
   const newFlightDestination = req.body.newFlightDestination;
   const newFlightPrice = req.body.newFlightPrice;
   const newFlightNumberSeats = req.body.newFlightNumberSeats;
+  const newFlightOrigin = req.body.newFlightOrigin;
 
   const db = await dbPromise;
 
@@ -295,14 +300,15 @@ app.post("/api/admin/add_flight", async (req, res) => {
   }
 
   const sql =
-    "INSERT INTO departures(flight_id, plane_name, departure_date, destination, departure_time, cost, seats) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO departures(flight_id, plane_name, departure_date, destination, origin, departure_time, cost, seats) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
   if (
     newFlightID &&
+    newFlightPlaneName &&
     newFlightDepartureDate &&
     newFlightDestination &&
+    newFlightOrigin &&
     newFlightTime &&
-    newFlightPlaneName &&
     newFlightPrice &&
     newFlightNumberSeats
   ) {
@@ -313,6 +319,7 @@ app.post("/api/admin/add_flight", async (req, res) => {
         newFlightPlaneName,
         newFlightDepartureDate,
         newFlightDestination,
+        newFlightOrigin,
         newFlightTime,
         newFlightPrice,
         newFlightNumberSeats,

@@ -61,7 +61,7 @@ class AdminShowFlights extends React.Component {
               <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Plane Name</th>
-                <th scope="col">Departure date</th>
+                <th scope="col">Origin</th>
                 <th scope="col">Destination</th>
                 <th scope="col">Actions</th>
               </tr>
@@ -71,7 +71,7 @@ class AdminShowFlights extends React.Component {
                 <tr>
                   <td>{departure.flight_id}</td>
                   <td>{departure.plane_name}</td>
-                  <td>{departure.departure_date}</td>
+                  <td>{departure.origin}</td>
                   <th>{departure.destination}</th>
                   <th>
                     <Link

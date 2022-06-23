@@ -116,6 +116,7 @@ class SearchFlight extends React.Component {
                   <option value="Tuuta">Tuuta</option>
                   <option value="Claris">Claris</option>
                   <option value="Lake Tekapo">Lake Tekapo</option>
+                  <option value="Dairy Flat">Dairy Flat</option>
                 </select>
               </div>
               <div className="col">
@@ -160,7 +161,7 @@ class SearchFlight extends React.Component {
               <th scope="col">ID</th>
               <th scope="col">Plane Name</th>
               <th scope="col">Departure date</th>
-              <th scope="col">Departure time</th>
+              <th scope="col">Origin</th>
               <th scope="col">Destination</th>
               <th scope="col">Actions</th>
             </tr>
@@ -171,7 +172,7 @@ class SearchFlight extends React.Component {
                 <td>{departure.flight_id}</td>
                 <td>{departure.plane_name}</td>
                 <td>{departure.departure_date}</td>
-                <th>{departure.departure_time}</th>
+                <th>{departure.origin}</th>
                 <th>{departure.destination}</th>
                 <th>
                   <Link

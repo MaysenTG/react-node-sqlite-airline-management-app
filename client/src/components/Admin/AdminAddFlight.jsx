@@ -14,6 +14,8 @@ export default class AdminAddFlight extends Component {
 
   handleSubmitNewFlight = async (e) => {
     e.preventDefault();
+    
+    console.log("ahhhh");
 
     const response = await fetch(`/api/admin/add_flight`, {
       method: "POST",
@@ -28,6 +30,7 @@ export default class AdminAddFlight extends Component {
         newFlightTime: e.target.newFlightTime.value,
         newFlightPrice: e.target.newFlightPrice.value,
         newFlightNumberSeats: e.target.newFlightNumberSeats.value,
+        newFlightOrigin: e.target.newFlightOrigin.value,
       }),
     });
 
@@ -89,17 +92,24 @@ export default class AdminAddFlight extends Component {
                 />
               </div>
             </div>
-            <div className="row">
+            <div className="row row-cols-2 row-cols-sm-2 row-cols-lg-2">
               <div className="col mb-3">
-                <label htmlFor="newFlightDepartureDate" className="form-label">
-                  Departure Date
+                <label htmlFor="newFlightDestination" className="form-label">
+                  Origin
                 </label>
-                <input
-                  required
-                  type="date"
-                  className="form-control"
-                  id="newFlightDepartureDate"
-                />
+                <select
+                  className="form-select"
+                  aria-label="Default select example"
+                  id="newFlightOrigin"
+                >
+                  <option selected>Select a origin country</option>
+                  <option value="Sydney">Sydney</option>
+                  <option value="Rotorua">Rotorua</option>
+                  <option value="Tuuta">Tuuta</option>
+                  <option value="Claris">Claris</option>
+                  <option value="Lake Tekapo">Lake Tekapo</option>
+                  <option value="Dairy Flat">Dairy Flat</option>
+                </select>
               </div>
               <div className="col mb-3">
                 <label htmlFor="newFlightDestination" className="form-label">
@@ -118,6 +128,17 @@ export default class AdminAddFlight extends Component {
                   <option value="Lake Tekapo">Lake Tekapo</option>
                   <option value="Dairy Flat">Dairy Flat</option>
                 </select>
+              </div>
+              <div className="col mb-3">
+                <label htmlFor="newFlightDepartureDate" className="form-label">
+                  Departure Date
+                </label>
+                <input
+                  required
+                  type="date"
+                  className="form-control"
+                  id="newFlightDepartureDate"
+                />
               </div>
               <div className="col mb-3">
                 <label htmlFor="newFlightTime" className="form-label">

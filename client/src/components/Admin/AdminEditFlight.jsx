@@ -48,6 +48,7 @@ export default class AdminEditFlight extends Component {
         newFlightPlaneName: e.target.newFlightPlaneName.value,
         newFlightDepartureDate: e.target.newFlightDepartureDate.value,
         newFlightDestination: e.target.newFlightDestination.value,
+        newFlightOrigin: e.target.newFlightOrigin.value,
         newFlightTime: e.target.newFlightTime.value,
         newFlightPrice: e.target.newFlightPrice.value,
         newFlightNumberSeats: e.target.newFlightNumberSeats.value,
@@ -113,7 +114,45 @@ export default class AdminEditFlight extends Component {
                   />
                 </div>
               </div>
-              <div className="row">
+              <div className="row row-cols-2 row-cols-sm-2 row-cols-lg-2">
+                <div className="col mb-3">
+                  <label htmlFor="newFlightDestination" className="form-label">
+                    Origin
+                  </label>
+                  <select
+                    className="form-select"
+                    aria-label="Default select example"
+                    id="newFlightOrigin"
+                    defaultValue={flightData.origin}
+                  >
+                    <option selected>Select a origin country</option>
+                    <option value="Sydney">Sydney</option>
+                    <option value="Rotorua">Rotorua</option>
+                    <option value="Tuuta">Tuuta</option>
+                    <option value="Claris">Claris</option>
+                    <option value="Lake Tekapo">Lake Tekapo</option>
+                    <option value="Dairy Flat">Dairy Flat</option>
+                  </select>
+                </div>
+                <div className="col mb-3">
+                  <label htmlFor="newFlightDestination" className="form-label">
+                    Destination
+                  </label>
+                  <select
+                    className="form-select"
+                    aria-label="Default select example"
+                    id="newFlightDestination"
+                    defaultValue={flightData.destination}
+                  >
+                    <option selected>Select a destination</option>
+                    <option value="Sydney">Sydney</option>
+                    <option value="Rotorua">Rotorua</option>
+                    <option value="Tuuta">Tuuta</option>
+                    <option value="Claris">Claris</option>
+                    <option value="Lake Tekapo">Lake Tekapo</option>
+                    <option value="Dairy Flat">Dairy Flat</option>
+                  </select>
+                </div>
                 <div className="col mb-3">
                   <label
                     htmlFor="newFlightDepartureDate"
@@ -130,25 +169,8 @@ export default class AdminEditFlight extends Component {
                   />
                 </div>
                 <div className="col mb-3">
-                  <label htmlFor="newFlightDestination" className="form-label">
-                    Destination
-                  </label>
-                  <select
-                    className="form-select"
-                    aria-label="Default select example"
-                    id="newFlightDestination"
-                    defaultValue={flightData.destination}
-                  >
-                    <option value="Sydney">Sydney</option>
-                    <option value="Rotorua">Rotorua</option>
-                    <option value="Tuuta">Tuuta</option>
-                    <option value="Claris">Claris</option>
-                    <option value="Lake Tekapo">Lake Tekapo</option>
-                  </select>
-                </div>
-                <div className="col mb-3">
                   <label htmlFor="newFlightTime" className="form-label">
-                    Departure Time (eg. 8AM)
+                    Departure Time
                   </label>
                   <input
                     required
@@ -189,6 +211,8 @@ export default class AdminEditFlight extends Component {
               <button type="submit" className="btn btn-primary">
                 Save changes
               </button>
+              <br />
+              <br />
               <br />
             </form>
           </div>

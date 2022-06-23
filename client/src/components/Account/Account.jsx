@@ -14,6 +14,7 @@ class Account extends React.Component {
         Tuuta: "NZCI",
         Claris: "NZGB",
         "Lake Tekapo": "NZTL",
+        "Dairy Flat": "NZNE",
       },
       flightDataPresent: false,
     };
@@ -161,13 +162,10 @@ class Account extends React.Component {
                           <div className="d-flex text-black">
                             <div className="flex-shrink-0">
                               <img
-                                src={
-                                  "http://www.gcmap.com/map?P=NZNE-" +
-                                  this.state.locationToICAO[
-                                    flight.destination
-                                  ] +
-                                  "&MS=wls&MR=200&PM=*"
-                                }
+                                src={`http://www.gcmap.com/map?P=
+                                  ${this.state.locationToICAO[flight.origin]}-${
+                                  this.state.locationToICAO[flight.destination]
+                                }&MS=wls&MR=200&PM=*`}
                                 alt="Generic placeholder map"
                                 className="img-fluid"
                                 style={{
