@@ -28,7 +28,7 @@ const db = new sqlite3.Database("./main.db", sqlite3.OPEN_READWRITE, (err) => {
 });
 
 // db.run(
-//   "CREATE TABLE user_flights(flight_id, customer_id)"
+//   "CREATE TABLE users(email, password, first_name, last_name, user_name, customer_id)"
 // );
 
 // const sql = (
@@ -40,8 +40,10 @@ const db = new sqlite3.Database("./main.db", sqlite3.OPEN_READWRITE, (err) => {
 // )
 
 // db.run(
-//   'ALTER TABLE user_flights ADD booking_id INTEGER'
+//   'DROP TABLE users'
 // )
+
+
 
 // db.run(
 //   'DELETE FROM user_flights'

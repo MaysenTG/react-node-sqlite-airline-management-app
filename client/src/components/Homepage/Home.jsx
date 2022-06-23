@@ -21,7 +21,7 @@ export default class Home extends Component {
             <form onSubmit={this.handleSearch}>
               <div className="p-2 row">
                 <div className="col">
-                  <label for="inputEmail4" className="form-label">
+                  <label htmlFor="inputEmail4" className="form-label">
                     Destination
                   </label>
                   <select
@@ -37,7 +37,7 @@ export default class Home extends Component {
                   </select>
                 </div>
                 <div className="col">
-                  <label for="inputEmail4" className="form-label">
+                  <label htmlFor="inputEmail4" className="form-label">
                     Departure Date
                   </label>
                   <input
@@ -48,7 +48,7 @@ export default class Home extends Component {
                   />
                 </div>
                 <div className="col">
-                  <label for="inputEmail4" className="form-label">
+                  <label htmlFor="inputEmail4" className="form-label">
                     &nbsp;
                   </label>
                   <button

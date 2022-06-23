@@ -100,7 +100,7 @@ class EditAccount extends React.Component {
             <form id="edit-account-form" onSubmit={this.onSubmitEdit}>
               <div className="mb-3 row row-cols-1 row-cols-sm-2 row-cols-lg-2">
                 <div className="col">
-                  <label for="inputFName" className="col-form-label">
+                  <label htmlFor="inputFName" className="col-form-label">
                     First Name
                   </label>
                   <div className="col">
@@ -114,7 +114,7 @@ class EditAccount extends React.Component {
                   </div>
                 </div>
                 <div className="col">
-                  <label for="inputLName" className="col-form-label">
+                  <label htmlFor="inputLName" className="col-form-label">
                     Last name
                   </label>
                   <div className="col">
@@ -130,7 +130,7 @@ class EditAccount extends React.Component {
               </div>
               <div className="mb-3 row row-cols-1 row-cols-sm-2 row-cols-lg-2">
                 <div className="col">
-                  <label for="inputEmail" className="col-form-label">
+                  <label htmlFor="inputEmail" className="col-form-label">
                     Email
                   </label>
                   <div className="col">
@@ -144,7 +144,7 @@ class EditAccount extends React.Component {
                   </div>
                 </div>
                 <div className="col">
-                  <label for="inputPassword" className="col-form-label">
+                  <label htmlFor="inputPassword" className="col-form-label">
                     Password
                   </label>
                   <div className="col">

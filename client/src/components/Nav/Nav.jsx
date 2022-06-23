@@ -29,7 +29,7 @@ class NavBar extends React.Component {
   handleLogout() {
     console.log("logging out...");
     window.localStorage.removeItem("userLoginInfo");
-    //window.location.reload();
+    window.location.reload();
   }
 
   render() {
@@ -58,13 +58,13 @@ class NavBar extends React.Component {
             >
               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li className="nav-item">
-                  <a className="nav-link active" aria-current="page" href="/">
+                  <a className="nav-link" aria-current="page" href="/">
                     Home
                   </a>
                 </li>
                 <li className="nav-item">
                   <li className="nav-item">
-                    <StyledLink className="nav-link" to="/search-flight">
+                    <StyledLink className="nav-link" to="/">
                       Search flight
                     </StyledLink>
                   </li>
@@ -87,7 +87,9 @@ class NavBar extends React.Component {
                     <li>
                       <a
                         className="dropdown-item"
-                        href={"/my-account/" + userLoginInfo.customer_id + "/edit"}
+                        href={
+                          "/my-account/" + userLoginInfo.customer_id + "/edit"
+                        }
                       >
                         Edit account
                       </a>
@@ -113,6 +115,18 @@ class NavBar extends React.Component {
                       </a>
                     </li>
                   </ul>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="/admin">
+                    Admin
+                  </a>
+                </li>
+              </ul>
+              <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li className="nav-item">
+                  <a className="nav-link" href="#">
+                    Welcome, {this.state.userLoginInfo.first_name}
+                  </a>
                 </li>
               </ul>
             </div>

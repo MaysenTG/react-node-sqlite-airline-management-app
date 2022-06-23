@@ -73,7 +73,7 @@ class Account extends React.Component {
     });
 
     const body = await response.json();
-    
+
     window.location.reload();
   };
 
@@ -153,6 +153,7 @@ class Account extends React.Component {
                   {this.state.flightDataPresent &&
                     userData.map((flight) => (
                       <div
+                        key={flight.flight_id}
                         className="card mb-2"
                         style={{ borderRadius: 15 + "px" }}
                       >
@@ -183,7 +184,12 @@ class Account extends React.Component {
                                 className="mb-2 pb-1"
                                 style={{ color: "#2b2a2a" }}
                               >
-                                Booking reference: <strong><a href={"/flights/"+flight.flight_id}>{flight.booking_id}</a></strong>
+                                Booking reference:{" "}
+                                <strong>
+                                  <a href={"/flights/" + flight.flight_id}>
+                                    {flight.booking_id}
+                                  </a>
+                                </strong>
                               </p>
                               <p
                                 className="mb-2 pb-1"

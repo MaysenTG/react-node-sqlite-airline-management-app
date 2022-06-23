@@ -30,13 +30,30 @@ app.use(express.static(path.join(__dirname, "/client/build")));
 
 // Gets the flights whose plane name match the search query
 app.post("/api/get_flights", async (req, res) => {
-  const searchQuery = req.body.planeTitleInput;
-  const db = await dbPromise;
-  const departures_by_plane_name = await db.all(
-    `SELECT * FROM departures WHERE plane_name LIKE '%${searchQuery}%'`
-  );
+  const searchDestination = req.body.inputDestination;
+  const searchDate = req.body.inputDate;
 
-  res.send(departures_by_plane_name);
+  const db = await dbPromise;
+
+  if (searchDate != "" && searchDestination != "default") {
+    const departures_by_search = await db.all(
+      `SELECT * FROM departures WHERE DATE(departure_date)='${searchDate}' AND destination='${searchDestination}'`
+    );
+    res.send(departures_by_search);
+  } else if (searchDate != "" && searchDestination == "default") {
+    const departures_by_search = await db.all(
+      `SELECT * FROM departures WHERE DATE(departure_date)='${searchDate}'`
+    );
+    res.send(departures_by_search);
+  } else if (searchDate == "" && searchDestination != "default") {
+    const departures_by_search = await db.all(
+      `SELECT * FROM departures WHERE destination='${searchDestination}'`
+    );
+    res.send(departures_by_search);
+  } else {
+    const departures_by_search = await db.all(`SELECT * FROM departures`);
+    res.send(departures_by_search);
+  }
 });
 
 // Posts the login data from the form. No data is returned if the data doesn't match
@@ -52,16 +69,46 @@ app.post("/api/account/login", async (req, res) => {
   res.send(user_login_query);
 });
 
+app.post("/api/account/create", async (req, res) => {
+  const email = req.body.createUserInfo.createUserEmail;
+  const password = req.body.createUserInfo.createUserPassword;
+  const first_name = req.body.createUserInfo.createUserFirstName;
+  const last_name = req.body.createUserInfo.createUserLastName;
+  const user_name = req.body.createUserInfo.createUserUserName;
+  const user_id = req.body.createUserInfo.createUserUserID;
+
+  const db = await dbPromise;
+  const sql =
+    "INSERT INTO users(first_name, last_name, user_name, password, email, customer_id) VALUES (?, ?, ?, ?, ?, ?)";
+
+  if (email && password && first_name && last_name && user_id) {
+    await db.run(
+      sql,
+      [first_name, last_name, user_name, password, email, user_id],
+      (err) => {
+        if (err) return console.error(err.message);
+        console.log("Created a new user.");
+      }
+    );
+  } else {
+    console.log("Error: Missing data");
+  }
+
+  console.log("adding user");
+
+  res.send({ express: `Created new account with the ID: ${user_id}` });
+});
+
 // Code for booking a flight
 app.post("/api/book_flight", async (req, res) => {
   const flightID = req.body.flightID;
   const bookingID = req.body.bookingID;
   const customerID = req.body.userData.customerID;
-  
 
   const db = await dbPromise;
 
-  const sql = "INSERT INTO user_flights(flight_id, customer_id, booking_id) VALUES (?, ?, ?)";
+  const sql =
+    "INSERT INTO user_flights(flight_id, customer_id, booking_id) VALUES (?, ?, ?)";
 
   if (flightID && customerID && bookingID) {
     await db.run(sql, [flightID, customerID, bookingID], (err) => {
@@ -132,7 +179,7 @@ app.post("/api/get_user_data/:customer_id", async (req, res) => {
 
   const db = await dbPromise;
   const only_user_data = await db.all(
-    `SELECT * FROM users WHERE id=${customer_id}`
+    `SELECT * FROM users WHERE customer_id=${customer_id}`
   );
   res.send(only_user_data);
 });
@@ -148,7 +195,7 @@ app.post("/api/edit_user_data/:customer_id", async (req, res) => {
 
   const db = await dbPromise;
   await db.all(
-    `UPDATE users SET first_name='${user_first_name}', last_name='${user_last_name}', email='${user_email}', password='${user_password}'  WHERE id=${customer_id}`
+    `UPDATE users SET first_name='${user_first_name}', last_name='${user_last_name}', email='${user_email}', password='${user_password}'  WHERE customer_id=${customer_id}`
   );
 
   res.send({ express: "Finished setting data" });
@@ -171,7 +218,7 @@ app.post("/api/get_flight/:id", async (req, res) => {
   const db = await dbPromise;
   // Query containing flight info and user info. Used to determine whether the user has already booked the flight
   const flight_info_by_id = await db.all(
-    `SELECT * FROM user_flights JOIN users ON (users.id = ${customerID}) JOIN departures ON (user_flights.flight_id = departures.flight_id) WHERE user_flights.flight_id='${idFlightParam}'`
+    `SELECT * FROM user_flights JOIN users ON (users.customer_id = ${customerID}) JOIN departures ON (user_flights.flight_id = departures.flight_id) WHERE user_flights.flight_id='${idFlightParam}'`
     //`SELECT departures.flight_id, departures.departure_time, departures.departure_date, departures.destination, departures.plane_name, users.id, users.first_name, users.last_name, users.user_name, users.email FROM departures JOIN user_flights ON (user_flights.flight_id = departures.flight_id) JOIN users ON (users.id = user_flights.customer_id) WHERE departures.flight_id=${idParam}`
   );
 
@@ -185,6 +232,101 @@ app.post("/api/get_flight/:id", async (req, res) => {
   } else {
     res.send(flight_info_by_id);
   }
+});
+
+// Admin API stuff
+app.post("/api/admin/edit_flight/:flight_id", async (req, res) => {
+  // Param ID from HTTP request
+  const idFlightParam = req.params.flight_id;
+  const newFlightPlaneName = req.body.newFlightPlaneName;
+  const newFlightTime = req.body.newFlightTime;
+  const newFlightDepartureDate = req.body.newFlightDepartureDate;
+  const newFlightDestination = req.body.newFlightDestination;
+  const newFlightPrice = req.body.newFlightPrice;
+  const newFlightNumberSeats = req.body.newFlightNumberSeats;
+
+  const db = await dbPromise;
+
+  db.run(
+    `UPDATE departures SET plane_name='${newFlightPlaneName}', departure_date='${newFlightDepartureDate}', destination='${newFlightDestination}', departure_time='${newFlightTime}', cost='${newFlightPrice}', seats='${newFlightNumberSeats}'  WHERE flight_id=${idFlightParam}`,
+    (err) => {
+      if (err) return console.error(err.message);
+
+      console.log("Updated a row into the departures table.");
+    }
+  );
+
+  res.send({ express: "Successfully updated the flight!" });
+});
+
+app.post("/api/admin/delete_flight/:flight_id", async (req, res) => {
+  // Param ID from HTTP request
+  const idFlightParam = req.params.flight_id;
+
+  const db = await dbPromise;
+
+  db.run(`DELETE FROM departures WHERE flight_id=${idFlightParam}`, (err) => {
+    if (err) return console.error(err.message);
+
+    console.log("Removed a row from the departures table.");
+  });
+
+  res.send({ express: `Successfully deleted flight ${idFlightParam}` });
+});
+
+app.post("/api/admin/add_flight", async (req, res) => {
+  // Param ID from HTTP request
+  const newFlightID = req.body.newFlightID;
+  const newFlightPlaneName = req.body.newFlightPlaneName;
+  const newFlightTime = req.body.newFlightTime;
+  const newFlightDepartureDate = req.body.newFlightDepartureDate;
+  const newFlightDestination = req.body.newFlightDestination;
+  const newFlightPrice = req.body.newFlightPrice;
+  const newFlightNumberSeats = req.body.newFlightNumberSeats;
+
+  const db = await dbPromise;
+
+  const check_for_duplicate_flight = await db.all(
+    `SELECT * FROM departures WHERE flight_id=${newFlightID}`
+  );
+
+  if (check_for_duplicate_flight.length > 0) {
+    res.send({ express: "Flight already exists", error: true });
+  }
+
+  const sql =
+    "INSERT INTO departures(flight_id, plane_name, departure_date, destination, departure_time, cost, seats) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+  if (
+    newFlightID &&
+    newFlightDepartureDate &&
+    newFlightDestination &&
+    newFlightTime &&
+    newFlightPlaneName &&
+    newFlightPrice &&
+    newFlightNumberSeats
+  ) {
+    await db.run(
+      sql,
+      [
+        newFlightID,
+        newFlightPlaneName,
+        newFlightDepartureDate,
+        newFlightDestination,
+        newFlightTime,
+        newFlightPrice,
+        newFlightNumberSeats,
+      ],
+      (err) => {
+        if (err) return console.error(err.message);
+        console.log("Inserted a row into the departures table.");
+      }
+    );
+  } else {
+    console.log("Error: Missing data");
+  }
+
+  res.send({ express: "Successfully added a new flight!", error: false });
 });
 
 // Setup the db and start the server
